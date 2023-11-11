@@ -17,17 +17,19 @@ public class EllipseRasterizer {
     }
 
     public void setEquationValues(Rectangle rectangle) {
-        int maxX = Math.max(rectangle.getPoint(0).x, rectangle.getPoint(2).x);
-        int minX = Math.min(rectangle.getPoint(0).x, rectangle.getPoint(2).x);
+        if (!rectangle.getPoints().isEmpty()) {
+            int maxX = Math.max(rectangle.getPoint(0).x, rectangle.getPoint(2).x);
+            int minX = Math.min(rectangle.getPoint(0).x, rectangle.getPoint(2).x);
 
-        int maxY = Math.max(rectangle.getPoint(0).y, rectangle.getPoint(2).y);
-        int minY = Math.min(rectangle.getPoint(0).y, rectangle.getPoint(2).y);
+            int maxY = Math.max(rectangle.getPoint(0).y, rectangle.getPoint(2).y);
+            int minY = Math.min(rectangle.getPoint(0).y, rectangle.getPoint(2).y);
 
-        a = Math.round((float) (maxX - minX) / 2);
-        b = Math.round((float) (maxY - minY) / 2);
+            a = Math.round((float) (maxX - minX) / 2);
+            b = Math.round((float) (maxY - minY) / 2);
 
-        // Calculate the center point as the midpoint of the major and minor axes.
-        this.centerPoint = new Point((maxX + minX) / 2, (maxY + minY) / 2);
+            // Calculate the center point as the midpoint of the major and minor axes.
+            this.centerPoint = new Point((maxX + minX) / 2, (maxY + minY) / 2);
+        }
     }
 
     public void rasterize()
