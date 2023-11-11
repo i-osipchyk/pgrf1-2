@@ -70,6 +70,6 @@ public class ScanLine implements Filler{
             }
         }
 
-        polygonRasterizer.rasterize(polygon);
+        polygonRasterizer.rasterize(polygon, null);
     }
 }
