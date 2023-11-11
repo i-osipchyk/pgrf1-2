@@ -10,8 +10,7 @@ public class EllipseRasterizer {
     private int a, b;
     private Point centerPoint;
 
-    public EllipseRasterizer(Raster raster, LineRasterizer lineRasterizer, Rectangle rectangle) {
-        this.raster = raster;
+    public EllipseRasterizer(LineRasterizer lineRasterizer, Rectangle rectangle) {
         this.lineRasterizer = lineRasterizer;
 
         int maxX = Math.max(rectangle.getPoint(0).x, rectangle.getPoint(2).x);
