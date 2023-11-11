@@ -30,17 +30,55 @@ public class Controller2D implements Controller {
 
     @Override
     public void initListeners() {
+        this.panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // TODO: initialize currentPoint
+            }
 
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // TODO: set dragging to false
+                // TODO: add point and initialize current point
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                // TODO: draw the polygon and exit interactive mode
+            }
+        });
+
+        this.panel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                // TODO: add interactive mode while dragging
+                update();
+            }
+        });
+
+        this.panel.addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyChar() == 'c' || e.getKeyChar() == 'C') {
+                    cleanAll();
+                }
+            }
+        });
     }
 
     private void update() {
-//        panel.clear();
-        //TODO
+        panel.clear();
+        // TODO: rasterize polygon
 
     }
 
     private void hardClear() {
         panel.clear();
+    }
+
+    private void cleanAll() {
+        // TODO: clear all elements
     }
 
 }
