@@ -13,7 +13,6 @@ public class RasterBufferedImage implements Raster {
     }
 
     public RasterBufferedImage(int width, int height) {
-        // inicializace image, nastavení rozmìrù (nastavení typu - pro nás nedùležité)
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 
