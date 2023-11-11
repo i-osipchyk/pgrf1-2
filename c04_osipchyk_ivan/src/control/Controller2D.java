@@ -1,5 +1,6 @@
 package control;
 
+import model.Polygon;
 import rasterize.*;
 import view.Panel;
 
@@ -9,6 +10,10 @@ import java.awt.event.*;
 public class Controller2D implements Controller {
 
     private final Panel panel;
+    public PolygonRasterizer polygonRasterizer;
+    public LineRasterizer lineRasterizer;
+    public EllipseRasterizer ellipseRasterizer;
+    public Polygon polygon;
 
     private int x,y;
     private LineRasterizerGraphics rasterizer;
@@ -16,7 +21,7 @@ public class Controller2D implements Controller {
     public Controller2D(Panel panel) {
         this.panel = panel;
         initObjects(panel.getRaster());
-        initListeners(panel);
+        initListeners();
     }
 
     public void initObjects(Raster raster) {
@@ -24,73 +29,8 @@ public class Controller2D implements Controller {
      }
 
     @Override
-    public void initListeners(Panel panel) {
-        panel.addMouseListener(new MouseAdapter() {
+    public void initListeners() {
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (e.isControlDown()) return;
-
-                if (e.isShiftDown()) {
-                    //TODO
-                } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    rasterizer.drawLine(x,y,e.getX(),e.getY());
-                    x = e.getX();
-                    y = e.getY();
-                } else if (SwingUtilities.isMiddleMouseButton(e)) {
-                    //TODO
-                } else if (SwingUtilities.isRightMouseButton(e)) {
-                    //TODO
-                }
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.isControlDown()) {
-                    if (SwingUtilities.isLeftMouseButton(e)) {
-                        //TODO
-                    } else if (SwingUtilities.isRightMouseButton(e)) {
-                        //TODO
-                    }
-                }
-            }
-        });
-
-        panel.addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (e.isControlDown()) return;
-
-                if (e.isShiftDown()) {
-                    //TODO
-                } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    //TODO
-                } else if (SwingUtilities.isRightMouseButton(e)) {
-                    //TODO
-                } else if (SwingUtilities.isMiddleMouseButton(e)) {
-                    //TODO
-                }
-                update();
-            }
-        });
-
-        panel.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                // na klávesu C vymazat plátno
-                if (e.getKeyCode() == KeyEvent.VK_C) {
-                    //TODO
-                }
-            }
-        });
-
-        panel.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                panel.resize();
-                initObjects(panel.getRaster());
-            }
-        });
     }
 
     private void update() {
