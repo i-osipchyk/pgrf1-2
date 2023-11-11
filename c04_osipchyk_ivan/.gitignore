@@ -76,4 +76,11 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
-*.DS_Store
+# Ignore macOS Finder custom attributes file
+.DS_Store
+
+# Ignore IntelliJ IDEA configuration directory
+.idea/
+
+# Ignore IntelliJ IDEA project file
+c04_osipchyk_ivan.iml
