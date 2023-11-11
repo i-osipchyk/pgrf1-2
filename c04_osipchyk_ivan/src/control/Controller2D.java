@@ -1,5 +1,6 @@
 package control;
 
+import model.Point;
 import model.Polygon;
 import rasterize.*;
 import view.Panel;
@@ -14,6 +15,7 @@ public class Controller2D implements Controller {
     public LineRasterizer lineRasterizer;
     public EllipseRasterizer ellipseRasterizer;
     public Polygon polygon;
+    private boolean wasDragged = false;
 
     private int x,y;
     private LineRasterizerGraphics rasterizer;
@@ -22,6 +24,9 @@ public class Controller2D implements Controller {
         this.panel = panel;
         initObjects(panel.getRaster());
         initListeners();
+        lineRasterizer = new LineRasterizerGraphics(this.panel.getRaster());
+        polygon = new Polygon();
+        polygonRasterizer = new PolygonRasterizer(lineRasterizer);
     }
 
     public void initObjects(Raster raster) {
@@ -33,25 +38,28 @@ public class Controller2D implements Controller {
         this.panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // TODO: initialize currentPoint
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                // TODO: set dragging to false
-                // TODO: add point and initialize current point
+                wasDragged = false;
+
+                if (polygon.getPoints().isEmpty())
+                    polygon.addPoint(new Point(e.getX(), e.getY()));
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                // TODO: draw the polygon and exit interactive mode
+                if (wasDragged || polygon.getPoints().size() != 1)
+                    polygon.addPoint(new Point(e.getX(), e.getY()));
+                update();
             }
         });
 
         this.panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                // TODO: add interactive mode while dragging
+                wasDragged = true;
                 update();
             }
         });
@@ -69,8 +77,7 @@ public class Controller2D implements Controller {
 
     private void update() {
         panel.clear();
-        // TODO: rasterize polygon
-
+        polygonRasterizer.rasterize(polygon);
     }
 
     private void hardClear() {
