@@ -3,6 +3,7 @@ package control;
 import fill.ScanLine;
 import model.Point;
 import model.Polygon;
+import model.Rectangle;
 import rasterize.*;
 import view.Panel;
 
@@ -13,11 +14,15 @@ public class Controller2D implements Controller {
 
     private final Panel panel;
     public PolygonRasterizer polygonRasterizer;
+    public RectangleRasterizer rectangleRasterizer;
     public LineRasterizer lineRasterizer;
     public EllipseRasterizer ellipseRasterizer;
     public Polygon polygon;
+    public Rectangle rectangle;
     private boolean wasDragged = false;
+    Point startingPoint;
     Point movingPoint;
+    private int mode = 1;
 
     private int x,y;
     private LineRasterizerGraphics rasterizer;
@@ -27,8 +32,7 @@ public class Controller2D implements Controller {
         initObjects(panel.getRaster());
         initListeners();
         lineRasterizer = new LineRasterizerGraphics(this.panel.getRaster());
-        polygon = new Polygon();
-        polygonRasterizer = new PolygonRasterizer(lineRasterizer);
+        cleanAll();
     }
 
     public void initObjects(Raster raster) {
@@ -40,33 +44,53 @@ public class Controller2D implements Controller {
         this.panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                startingPoint = new Point(e.getX(), e.getY());
                 movingPoint = new Point(e.getX(), e.getY());
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
                 wasDragged = false;
+                if (mode == 1) {
 
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    if (polygon.getPoints().isEmpty()) {
-                        polygon.addPoint(new Point(e.getX(), e.getY()));
-                        movingPoint = new Point(e.getX(), e.getY());
+                    if (e.getButton() == MouseEvent.BUTTON1) {
+                        if (polygon.getPoints().isEmpty()) {
+                            polygon.addPoint(new Point(e.getX(), e.getY()));
+                            movingPoint = new Point(e.getX(), e.getY());
+                        }
+                    }
+
+                    if (e.getButton() == MouseEvent.BUTTON3) {
+                        ScanLine scanLine = new ScanLine(lineRasterizer, polygonRasterizer, polygon);
+                        scanLine.fill();
                     }
                 }
 
-                if (e.getButton() == MouseEvent.BUTTON3) {
-                    ScanLine scanLine = new ScanLine(lineRasterizer, polygonRasterizer, polygon);
-                    scanLine.fill();
+                if (mode == 2) {
+                    cleanRectangle();
+                    if (rectangle.getPoints().isEmpty()) {
+                        startingPoint = new Point(e.getX(), e.getY());
+                        movingPoint = new Point(e.getX(), e.getY());
+                    }
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    if (wasDragged || polygon.getPoints().size() != 1)
-                        polygon.addPoint(new Point(e.getX(), e.getY()));
+                if (mode == 1) {
+                    if (e.getButton() == MouseEvent.BUTTON1) {
+                        if (wasDragged || polygon.getPoints().size() != 1)
+                            polygon.addPoint(new Point(e.getX(), e.getY()));
+                        movingPoint = null;
+                        update();
+                    }
+                }
+
+                if (mode == 2) {
+                    rectangle.addAllPoints(startingPoint, new Point(e.getX(), e.getY()));
+                    if (wasDragged)
+                        update();
                     movingPoint = null;
-                    update();
                 }
             }
         });
@@ -74,8 +98,15 @@ public class Controller2D implements Controller {
         this.panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    wasDragged = true;
+                wasDragged = true;
+                if (mode == 1) {
+                    if (e.getButton() == MouseEvent.BUTTON1) {
+                        movingPoint = new Point(e.getX(), e.getY());
+                        update();
+                    }
+                }
+
+                if (mode == 2) {
                     movingPoint = new Point(e.getX(), e.getY());
                     update();
                 }
@@ -89,13 +120,29 @@ public class Controller2D implements Controller {
                 if(e.getKeyChar() == 'c' || e.getKeyChar() == 'C') {
                     cleanAll();
                 }
+
+                if(e.getKeyChar() == 'p' || e.getKeyChar() == 'P') {
+                    mode = 1;
+                }
+
+                if(e.getKeyChar() == 'r' || e.getKeyChar() == 'R') {
+                    mode = 2;
+                }
             }
         });
     }
 
     private void update() {
         panel.clear();
-        polygonRasterizer.rasterize(polygon, movingPoint);
+        if (mode == 1)
+            polygonRasterizer.rasterize(polygon, movingPoint);
+        if (mode == 2) {
+            rectangleRasterizer.rasterize(rectangle, startingPoint, movingPoint);
+            if (rectangle.getPoints().size() == 4) {
+                ellipseRasterizer.setEquationValues(rectangle);
+                ellipseRasterizer.rasterize();
+            }
+        }
     }
 
     private void hardClear() {
@@ -103,7 +150,19 @@ public class Controller2D implements Controller {
     }
 
     private void cleanAll() {
-        // TODO: clear all elements
+        polygon = new Polygon();
+        rectangle = new Rectangle();
+        polygonRasterizer = new PolygonRasterizer(lineRasterizer);
+        rectangleRasterizer = new RectangleRasterizer(lineRasterizer);
+        ellipseRasterizer = new EllipseRasterizer(lineRasterizer);
+        movingPoint = null;
+        panel.clear();
     }
 
+    private void cleanRectangle() {
+        rectangle = new Rectangle();
+        rectangleRasterizer = new RectangleRasterizer(lineRasterizer);
+        ellipseRasterizer = new EllipseRasterizer(lineRasterizer);
+        movingPoint = null;
+    }
 }
