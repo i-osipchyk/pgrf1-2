@@ -16,6 +16,7 @@ public class Controller2D implements Controller {
     public EllipseRasterizer ellipseRasterizer;
     public Polygon polygon;
     private boolean wasDragged = false;
+    Point movingPoint;
 
     private int x,y;
     private LineRasterizerGraphics rasterizer;
@@ -38,20 +39,24 @@ public class Controller2D implements Controller {
         this.panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                movingPoint = new Point(e.getX(), e.getY());
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
                 wasDragged = false;
 
-                if (polygon.getPoints().isEmpty())
+                if (polygon.getPoints().isEmpty()) {
                     polygon.addPoint(new Point(e.getX(), e.getY()));
+                    movingPoint = new Point(e.getX(), e.getY());
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (wasDragged || polygon.getPoints().size() != 1)
                     polygon.addPoint(new Point(e.getX(), e.getY()));
+                movingPoint = null;
                 update();
             }
         });
@@ -60,6 +65,7 @@ public class Controller2D implements Controller {
             @Override
             public void mouseDragged(MouseEvent e) {
                 wasDragged = true;
+                movingPoint = new Point(e.getX(), e.getY());
                 update();
             }
         });
@@ -77,7 +83,7 @@ public class Controller2D implements Controller {
 
     private void update() {
         panel.clear();
-        polygonRasterizer.rasterize(polygon);
+        polygonRasterizer.rasterize(polygon, movingPoint);
     }
 
     private void hardClear() {
