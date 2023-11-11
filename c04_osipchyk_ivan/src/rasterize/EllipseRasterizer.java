@@ -10,9 +10,11 @@ public class EllipseRasterizer {
     private int a, b;
     private Point centerPoint;
 
-    public EllipseRasterizer(LineRasterizer lineRasterizer, Rectangle rectangle) {
+    public EllipseRasterizer(LineRasterizer lineRasterizer) {
         this.lineRasterizer = lineRasterizer;
+    }
 
+    public void setEquationValues(Rectangle rectangle) {
         int maxX = Math.max(rectangle.getPoint(0).x, rectangle.getPoint(2).x);
         int minX = Math.min(rectangle.getPoint(0).x, rectangle.getPoint(2).x);
 
@@ -25,7 +27,6 @@ public class EllipseRasterizer {
         // Calculate the center point as the midpoint of the major and minor axes.
         this.centerPoint = new Point((maxX + minX) / 2, (maxY + minY) / 2);
     }
-
 
     public void rasterize()
     {
