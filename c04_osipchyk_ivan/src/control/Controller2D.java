@@ -1,5 +1,6 @@
 package control;
 
+import fill.ScanLine;
 import model.Point;
 import model.Polygon;
 import rasterize.*;
@@ -46,27 +47,38 @@ public class Controller2D implements Controller {
             public void mousePressed(MouseEvent e) {
                 wasDragged = false;
 
-                if (polygon.getPoints().isEmpty()) {
-                    polygon.addPoint(new Point(e.getX(), e.getY()));
-                    movingPoint = new Point(e.getX(), e.getY());
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    if (polygon.getPoints().isEmpty()) {
+                        polygon.addPoint(new Point(e.getX(), e.getY()));
+                        movingPoint = new Point(e.getX(), e.getY());
+                    }
+                }
+
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    ScanLine scanLine = new ScanLine(lineRasterizer, polygonRasterizer, polygon);
+                    scanLine.fill();
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (wasDragged || polygon.getPoints().size() != 1)
-                    polygon.addPoint(new Point(e.getX(), e.getY()));
-                movingPoint = null;
-                update();
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    if (wasDragged || polygon.getPoints().size() != 1)
+                        polygon.addPoint(new Point(e.getX(), e.getY()));
+                    movingPoint = null;
+                    update();
+                }
             }
         });
 
         this.panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                wasDragged = true;
-                movingPoint = new Point(e.getX(), e.getY());
-                update();
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    wasDragged = true;
+                    movingPoint = new Point(e.getX(), e.getY());
+                    update();
+                }
             }
         });
 
