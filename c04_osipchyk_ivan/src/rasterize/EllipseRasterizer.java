@@ -4,6 +4,8 @@ import model.Point;
 import model.Polygon;
 import model.Rectangle;
 
+import java.awt.*;
+
 public class EllipseRasterizer {
     Raster raster;
     LineRasterizer lineRasterizer;
@@ -49,7 +51,7 @@ public class EllipseRasterizer {
             if (i != 0) {
                 // draw a line joining previous and new point .
                 lineRasterizer.rasterize((int)px + cx, (int)py + cy,
-                        (int)x + cx, (int)y + cy);
+                        (int)x + cx, (int)y + cy, Color.GREEN);
             }
 
             // store the previous points

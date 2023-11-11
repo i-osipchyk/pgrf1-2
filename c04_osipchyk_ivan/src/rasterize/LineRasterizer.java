@@ -20,17 +20,17 @@ public abstract class LineRasterizer {
         this.color = new Color(color);
     }
 
-    public void rasterize(Line line) {
+    public void rasterize(Line line, Color color) {
         //TODO
-        drawLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
+        drawLine(line.getX1(), line.getY1(), line.getX2(), line.getY2(), color);
     }
 
-    public void rasterize(int x1, int y1, int x2, int y2) {
+    public void rasterize(int x1, int y1, int x2, int y2, Color color) {
         //TODO
-        drawLine(x1, y1, x2, y2);
+        drawLine(x1, y1, x2, y2, color);
     }
 
-    protected void drawLine(int x1, int y1, int x2, int y2) {
+    protected void drawLine(int x1, int y1, int x2, int y2, Color color) {
 
     }
 }

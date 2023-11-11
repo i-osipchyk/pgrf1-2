@@ -8,6 +8,7 @@ import rasterize.LineRasterizer;
 import rasterize.PolygonRasterizer;
 import rasterize.Raster;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -66,7 +67,7 @@ public class ScanLine implements Filler{
                 int x1 = intersections.get(i);
                 int x2 = intersections.get(i+1);
 
-                lineRasterizer.rasterize(x1, y, x2, y);
+                lineRasterizer.rasterize(x1, y, x2, y, Color.BLUE);
             }
         }
 

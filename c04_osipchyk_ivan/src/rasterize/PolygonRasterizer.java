@@ -4,6 +4,7 @@ import model.Line;
 import model.Point;
 import model.Polygon;
 
+import java.awt.*;
 import java.util.List;
 
 public class PolygonRasterizer {
@@ -15,14 +16,13 @@ public class PolygonRasterizer {
 
     public void rasterize(Polygon polygon, Point movingPoint) {
 
-        // vypsat!
         List<Point> points = polygon.getPoints();
 
         if(points.size() == 1 && movingPoint != null) {
             Point first = points.get(0);
 
             lineRasterizer.rasterize(
-                    new Line(first, movingPoint, 0xFF0000)
+                    new Line(first, movingPoint), Color.RED
             );
             return;
         }
@@ -30,13 +30,12 @@ public class PolygonRasterizer {
 
         for(int i = 0; i < points.size(); i++) {
             Point current = points.get(i);
-//            this.raster.setPixel(current.x, current.y, 0x0000FF);
             if(i + 1 < points.size()) {
 
                 Point next = points.get(i + 1);
 
                 lineRasterizer.rasterize(
-                        new Line(current, next, 0x000000)
+                        new Line(current, next), Color.GREEN
                 );
             }
         }
@@ -47,11 +46,11 @@ public class PolygonRasterizer {
             Point last = points.get(points.size() - 1);
 
             lineRasterizer.rasterize(
-                    new Line(movingPoint, first, 0xFF0000)
+                    new Line(movingPoint, first), Color.RED
             );
 
             lineRasterizer.rasterize(
-                    new Line(last, movingPoint, 0xFF0000)
+                    new Line(last, movingPoint), Color.RED
             );
         }else if(points.size() > 1) {
 
@@ -59,7 +58,7 @@ public class PolygonRasterizer {
             Point last = points.get(points.size() - 1);
 
             lineRasterizer.rasterize(
-                    new Line(last, first, 0x000000)
+                    new Line(last, first), Color.GREEN
             );
         }
     }
