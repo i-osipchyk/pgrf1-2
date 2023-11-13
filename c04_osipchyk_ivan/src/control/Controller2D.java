@@ -22,7 +22,8 @@ public class Controller2D implements Controller {
     private boolean wasDragged = false;
     Point startingPoint;
     Point movingPoint;
-    private int mode = 1;
+    private int rasterizationMode = 1;
+    private int fillingMode = 1;
 
     private int x,y;
     private LineRasterizerGraphics rasterizer;
@@ -51,7 +52,7 @@ public class Controller2D implements Controller {
             @Override
             public void mousePressed(MouseEvent e) {
                 wasDragged = false;
-                if (mode == 1) {
+                if (rasterizationMode == 1) {
 
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         if (polygon.getPoints().isEmpty()) {
@@ -66,7 +67,7 @@ public class Controller2D implements Controller {
                     }
                 }
 
-                if (mode == 2) {
+                if (rasterizationMode == 2) {
                     cleanRectangle();
                     if (rectangle.getPoints().isEmpty()) {
                         startingPoint = new Point(e.getX(), e.getY());
@@ -84,7 +85,7 @@ public class Controller2D implements Controller {
                 x = Math.max(0, Math.min(x, panel.getWidth()));
                 y = Math.max(0, Math.min(y, panel.getHeight()));
 
-                if (mode == 1) {
+                if (rasterizationMode == 1) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         if (wasDragged || polygon.getPoints().size() != 1) {
                             polygon.addPoint(new Point(x, y));
@@ -94,7 +95,7 @@ public class Controller2D implements Controller {
                     }
                 }
 
-                if (mode == 2) {
+                if (rasterizationMode == 2) {
                     rectangle.addAllPoints(startingPoint, new Point(x, y));
                     if (wasDragged)
                         update();
@@ -113,14 +114,14 @@ public class Controller2D implements Controller {
                 // Adjust coordinates to be within canvas boundaries
                 x = Math.max(0, Math.min(x, panel.getWidth()));
                 y = Math.max(0, Math.min(y, panel.getHeight()));
-                if (mode == 1) {
+                if (rasterizationMode == 1) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         movingPoint = new Point(x, y);
                         update();
                     }
                 }
 
-                if (mode == 2) {
+                if (rasterizationMode == 2) {
                     movingPoint = new Point(x, y);
                     update();
                 }
@@ -136,11 +137,11 @@ public class Controller2D implements Controller {
                 }
 
                 if(e.getKeyChar() == 'p' || e.getKeyChar() == 'P') {
-                    mode = 1;
+                    rasterizationMode = 1;
                 }
 
                 if(e.getKeyChar() == 'r' || e.getKeyChar() == 'R') {
-                    mode = 2;
+                    rasterizationMode = 2;
                 }
             }
         });
@@ -148,9 +149,9 @@ public class Controller2D implements Controller {
 
     private void update() {
         panel.clear();
-        if (mode == 1)
+        if (rasterizationMode == 1)
             polygonRasterizer.rasterize(polygon, movingPoint);
-        if (mode == 2) {
+        if (rasterizationMode == 2) {
             rectangleRasterizer.rasterize(rectangle, startingPoint, movingPoint);
             if (rectangle.getPoints().size() == 4) {
                 ellipseRasterizer.setEquationValues(rectangle);
