@@ -85,7 +85,7 @@ public class Controller2D implements Controller {
                 }
 
                 if (rasterizationMode == 2) {
-                    cleanRectangle();
+                    cleanAll();
                     if (rectangle.getPoints().isEmpty()) {
                         startingPoint = new Point(e.getX(), e.getY());
                         movingPoint = new Point(e.getX(), e.getY());
