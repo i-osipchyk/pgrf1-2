@@ -9,9 +9,13 @@ import java.util.List;
 
 public class PolygonRasterizer {
     private LineRasterizer lineRasterizer;
+    private Color finalLineColor;
+    private Color movingLineColor;
 
-    public PolygonRasterizer(LineRasterizer lineRasterizer) {
+    public PolygonRasterizer(LineRasterizer lineRasterizer, Color finalLineColor, Color movingLineColor) {
         this.lineRasterizer = lineRasterizer;
+        this.finalLineColor = finalLineColor;
+        this.movingLineColor = movingLineColor;
     }
 
     public void rasterize(Polygon polygon, Point movingPoint) {
@@ -22,7 +26,7 @@ public class PolygonRasterizer {
             Point first = points.get(0);
 
             lineRasterizer.rasterize(
-                    new Line(first, movingPoint), Color.RED
+                    new Line(first, movingPoint), this.movingLineColor
             );
             return;
         }
@@ -35,7 +39,7 @@ public class PolygonRasterizer {
                 Point next = points.get(i + 1);
 
                 lineRasterizer.rasterize(
-                        new Line(current, next), Color.GREEN
+                        new Line(current, next), this.finalLineColor
                 );
             }
         }
@@ -46,11 +50,11 @@ public class PolygonRasterizer {
             Point last = points.get(points.size() - 1);
 
             lineRasterizer.rasterize(
-                    new Line(movingPoint, first), Color.RED
+                    new Line(movingPoint, first), this.movingLineColor
             );
 
             lineRasterizer.rasterize(
-                    new Line(last, movingPoint), Color.RED
+                    new Line(last, movingPoint), this.movingLineColor
             );
         }else if(points.size() > 1) {
 
@@ -58,7 +62,7 @@ public class PolygonRasterizer {
             Point last = points.get(points.size() - 1);
 
             lineRasterizer.rasterize(
-                    new Line(last, first), Color.GREEN
+                    new Line(last, first), this.finalLineColor
             );
         }
     }
