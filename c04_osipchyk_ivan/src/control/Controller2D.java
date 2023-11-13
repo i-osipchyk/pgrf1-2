@@ -9,6 +9,7 @@ import rasterize.*;
 import view.Panel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 public class Controller2D implements Controller {
@@ -25,6 +26,8 @@ public class Controller2D implements Controller {
     Point movingPoint;
     private int rasterizationMode = 1;
     private int fillingMode = 1;
+    private Color finalLineColor = Color.GREEN;
+    private Color movingLineColor = Color.RED;
 
     private int x,y;
     private LineRasterizerGraphics rasterizer;
@@ -183,7 +186,7 @@ public class Controller2D implements Controller {
     private void cleanAll() {
         polygon = new Polygon();
         rectangle = new Rectangle();
-        polygonRasterizer = new PolygonRasterizer(lineRasterizer);
+        polygonRasterizer = new PolygonRasterizer(lineRasterizer, finalLineColor, movingLineColor);
         rectangleRasterizer = new RectangleRasterizer(lineRasterizer);
         ellipseRasterizer = new EllipseRasterizer(lineRasterizer);
         movingPoint = null;
