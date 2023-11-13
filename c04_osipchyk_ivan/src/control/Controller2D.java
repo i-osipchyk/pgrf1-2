@@ -77,17 +77,25 @@ public class Controller2D implements Controller {
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
+
+                // Adjust coordinates to be within canvas boundaries
+                x = Math.max(0, Math.min(x, panel.getWidth()));
+                y = Math.max(0, Math.min(y, panel.getHeight()));
+
                 if (mode == 1) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
-                        if (wasDragged || polygon.getPoints().size() != 1)
-                            polygon.addPoint(new Point(e.getX(), e.getY()));
+                        if (wasDragged || polygon.getPoints().size() != 1) {
+                            polygon.addPoint(new Point(x, y));
+                        }
                         movingPoint = null;
                         update();
                     }
                 }
 
                 if (mode == 2) {
-                    rectangle.addAllPoints(startingPoint, new Point(e.getX(), e.getY()));
+                    rectangle.addAllPoints(startingPoint, new Point(x, y));
                     if (wasDragged)
                         update();
                     movingPoint = null;
@@ -99,15 +107,21 @@ public class Controller2D implements Controller {
             @Override
             public void mouseDragged(MouseEvent e) {
                 wasDragged = true;
+                int x = e.getX();
+                int y = e.getY();
+
+                // Adjust coordinates to be within canvas boundaries
+                x = Math.max(0, Math.min(x, panel.getWidth()));
+                y = Math.max(0, Math.min(y, panel.getHeight()));
                 if (mode == 1) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
-                        movingPoint = new Point(e.getX(), e.getY());
+                        movingPoint = new Point(x, y);
                         update();
                     }
                 }
 
                 if (mode == 2) {
-                    movingPoint = new Point(e.getX(), e.getY());
+                    movingPoint = new Point(x, y);
                     update();
                 }
             }
