@@ -1,6 +1,7 @@
 package control;
 
 import fill.ScanLine;
+import fill.SeedFill;
 import model.Point;
 import model.Polygon;
 import model.Rectangle;
@@ -68,7 +69,8 @@ public class Controller2D implements Controller {
                         }
 
                         if (fillingMode == 2) {
-                            // TODO: add seed filling
+                            SeedFill seedFill = new SeedFill(panel.getRaster(), panel.getRaster().getPixel(e.getX(), e.getY()), e.getX(), e.getY(), panel.getWidth(), panel.getHeight());
+                            seedFill.fill();
                         }
                     }
                 }
