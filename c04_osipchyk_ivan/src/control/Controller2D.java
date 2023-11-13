@@ -2,6 +2,7 @@ package control;
 
 import fill.ScanLine;
 import fill.SeedFill;
+import fill.SeedFillBorder;
 import model.Point;
 import model.Polygon;
 import model.Rectangle;
@@ -74,6 +75,11 @@ public class Controller2D implements Controller {
                         if (fillingMode == 2) {
                             SeedFill seedFill = new SeedFill(panel.getRaster(), panel.getRaster().getPixel(e.getX(), e.getY()), e.getX(), e.getY(), panel.getWidth(), panel.getHeight());
                             seedFill.fill();
+                        }
+
+                        if (fillingMode == 3) {
+                            SeedFillBorder seedFillBorder = new SeedFillBorder(panel.getRaster(), finalLineColor, e.getX(), e.getY(), panel.getWidth(), panel.getHeight());
+                            seedFillBorder.fill();
                         }
                     }
                 }
@@ -161,6 +167,10 @@ public class Controller2D implements Controller {
 
                 if(e.getKeyChar() == '2') {
                     fillingMode = 2;
+                }
+
+                if(e.getKeyChar() == '3') {
+                    fillingMode = 3;
                 }
             }
         });
