@@ -62,8 +62,14 @@ public class Controller2D implements Controller {
                     }
 
                     if (e.getButton() == MouseEvent.BUTTON3) {
-                        ScanLine scanLine = new ScanLine(lineRasterizer, polygonRasterizer, polygon);
-                        scanLine.fill();
+                        if (fillingMode == 1) {
+                            ScanLine scanLine = new ScanLine(lineRasterizer, polygonRasterizer, polygon);
+                            scanLine.fill();
+                        }
+
+                        if (fillingMode == 2) {
+                            // TODO: add seed filling
+                        }
                     }
                 }
 
@@ -142,6 +148,14 @@ public class Controller2D implements Controller {
 
                 if(e.getKeyChar() == 'r' || e.getKeyChar() == 'R') {
                     rasterizationMode = 2;
+                }
+
+                if(e.getKeyChar() == '1') {
+                    fillingMode = 1;
+                }
+
+                if(e.getKeyChar() == '2') {
+                    fillingMode = 2;
                 }
             }
         });
