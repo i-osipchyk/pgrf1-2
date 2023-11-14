@@ -216,7 +216,7 @@ public class Controller2D implements Controller {
                 }
 
                 if(e.getKeyChar() == 'e' || e.getKeyChar() == 'E') {
-                    cutPolygon(polygon, clippingPolygon);
+                    clipPolygon(polygon, clippingPolygon);
                 }
             }
         });
@@ -260,9 +260,9 @@ public class Controller2D implements Controller {
         panel.clear();
     }
 
-    private void cutPolygon(Polygon polygonToCut, Polygon clippingPolygon) {
+    private void clipPolygon(Polygon polygonToClip, Polygon clippingPolygon) {
         clipper = new PolygonClipper();
-        polygon = PolygonClipper.clip(polygonToCut, clippingPolygon);
+        polygon = PolygonClipper.clip(polygonToClip, clippingPolygon);
         update();
     }
 
