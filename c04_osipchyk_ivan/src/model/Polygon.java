@@ -8,6 +8,9 @@ public class Polygon {
     public Polygon() {
         this.points = new ArrayList<>();
     }
+    public Polygon(ArrayList<Point> points) {
+        this.points = points;
+    }
 
     public void addPoint(Point p) {
         this.points.add(p);
