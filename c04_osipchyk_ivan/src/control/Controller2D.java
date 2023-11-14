@@ -1,5 +1,6 @@
 package control;
 
+import clip.PolygonClipper;
 import fill.ScanLine;
 import fill.SeedFill;
 import fill.SeedFillBorder;
@@ -12,6 +13,7 @@ import view.Panel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class Controller2D implements Controller {
 
@@ -22,18 +24,19 @@ public class Controller2D implements Controller {
     public Rectangle rectangle;
     public RectangleRasterizer rectangleRasterizer;
     public EllipseRasterizer ellipseRasterizer;
-    public Polygon cuttingPolygon;
-    public PolygonRasterizer cuttingPolygonRasterizer;
+    public Polygon clippingPolygon;
+    public PolygonRasterizer clippingPolygonRasterizer;
+    public PolygonClipper clipper;
     private boolean wasDragged = false;
     Point startingPoint;
     Point movingPoint;
     private int rasterizationMode = 1;
     private int fillingMode = 1;
-    private int cuttingMode = 0;
+    private int clippingMode = 0;
     private Color finalLineColor = Color.GREEN;
     private Color movingLineColor = Color.RED;
-    private Color cuttingFinalLineColor = Color.BLUE;
-    private Color cuttingMovingLineColor = Color.CYAN;
+    private Color clippingFinalLineColor = Color.BLUE;
+    private Color clippingMovingLineColor = Color.CYAN;
 
     private int x,y;
     private LineRasterizerGraphics rasterizer;
@@ -62,7 +65,7 @@ public class Controller2D implements Controller {
             @Override
             public void mousePressed(MouseEvent e) {
                 wasDragged = false;
-                if (cuttingMode == 0) {
+                if (clippingMode == 0) {
                     if (rasterizationMode == 1) {
 
                         if (e.getButton() == MouseEvent.BUTTON1) {
@@ -99,8 +102,8 @@ public class Controller2D implements Controller {
                     }
                 } else {
                     if (e.getButton() == MouseEvent.BUTTON1) {
-                        if (cuttingPolygon.getPoints().isEmpty()) {
-                            cuttingPolygon.addPoint(new Point(e.getX(), e.getY()));
+                        if (clippingPolygon.getPoints().isEmpty()) {
+                            clippingPolygon.addPoint(new Point(e.getX(), e.getY()));
                         }
                     }
                 }
@@ -115,7 +118,7 @@ public class Controller2D implements Controller {
                 x = Math.max(0, Math.min(x, panel.getWidth()));
                 y = Math.max(0, Math.min(y, panel.getHeight()));
 
-                if (cuttingMode == 0) {
+                if (clippingMode == 0) {
                     if (rasterizationMode == 1) {
                         if (e.getButton() == MouseEvent.BUTTON1) {
                             if (wasDragged || polygon.getPoints().size() != 1) {
@@ -134,8 +137,8 @@ public class Controller2D implements Controller {
                     }
                 } else {
                     if (e.getButton() == MouseEvent.BUTTON1) {
-                        if (wasDragged || cuttingPolygon.getPoints().size() != 1) {
-                            cuttingPolygon.addPoint(new Point(x, y));
+                        if (wasDragged || clippingPolygon.getPoints().size() != 1) {
+                            clippingPolygon.addPoint(new Point(x, y));
                         }
                         movingPoint = null;
                         update();
@@ -154,7 +157,7 @@ public class Controller2D implements Controller {
                 // Adjust coordinates to be within canvas boundaries
                 x = Math.max(0, Math.min(x, panel.getWidth()));
                 y = Math.max(0, Math.min(y, panel.getHeight()));
-                if (cuttingMode == 0) {
+                if (clippingMode == 0) {
                     if (rasterizationMode == 1) {
                         if (e.getButton() == MouseEvent.BUTTON1) {
                             movingPoint = new Point(x, y);
@@ -185,31 +188,35 @@ public class Controller2D implements Controller {
 
                 if(e.getKeyChar() == 'p' || e.getKeyChar() == 'P') {
                     rasterizationMode = 1;
-                    cuttingMode = 0;
+                    clippingMode = 0;
                 }
 
                 if(e.getKeyChar() == 'r' || e.getKeyChar() == 'R') {
                     rasterizationMode = 2;
-                    cuttingMode = 0;
+                    clippingMode = 0;
                 }
 
                 if(e.getKeyChar() == '1') {
                     fillingMode = 1;
-                    cuttingMode = 0;
+                    clippingMode = 0;
                 }
 
                 if(e.getKeyChar() == '2') {
                     fillingMode = 2;
-                    cuttingMode = 0;
+                    clippingMode = 0;
                 }
 
                 if(e.getKeyChar() == '3') {
                     fillingMode = 3;
-                    cuttingMode = 0;
+                    clippingMode = 0;
                 }
 
                 if(e.getKeyChar() == 'o' || e.getKeyChar() == 'O') {
-                    cuttingMode = 1;
+                    clippingMode = 1;
+                }
+
+                if(e.getKeyChar() == 'e' || e.getKeyChar() == 'E') {
+                    cutPolygon(polygon, clippingPolygon);
                 }
             }
         });
@@ -217,7 +224,7 @@ public class Controller2D implements Controller {
 
     private void update() {
         panel.clear();
-        if (cuttingMode == 0) {
+        if (clippingMode == 0) {
             if (rasterizationMode == 1)
                 polygonRasterizer.rasterize(polygon, movingPoint);
             if (rasterizationMode == 2) {
@@ -230,7 +237,7 @@ public class Controller2D implements Controller {
         } else {
             if (rasterizationMode == 1)
                 polygonRasterizer.rasterize(polygon, null);
-            cuttingPolygonRasterizer.rasterize(cuttingPolygon, movingPoint);
+            clippingPolygonRasterizer.rasterize(clippingPolygon, movingPoint);
         }
     }
 
@@ -246,11 +253,17 @@ public class Controller2D implements Controller {
         rectangleRasterizer = new RectangleRasterizer(lineRasterizer);
         ellipseRasterizer = new EllipseRasterizer(lineRasterizer);
 
-        cuttingPolygon = new Polygon();
-        cuttingPolygonRasterizer = new PolygonRasterizer(lineRasterizer, cuttingFinalLineColor, cuttingMovingLineColor);
+        clippingPolygon = new Polygon();
+        clippingPolygonRasterizer = new PolygonRasterizer(lineRasterizer, clippingFinalLineColor, clippingMovingLineColor);
 
         movingPoint = null;
         panel.clear();
+    }
+
+    private void cutPolygon(Polygon polygonToCut, Polygon clippingPolygon) {
+        clipper = new PolygonClipper();
+        polygon = PolygonClipper.clip(polygonToCut, clippingPolygon);
+        update();
     }
 
     private void cleanRectangle() {
