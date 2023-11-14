@@ -39,12 +39,13 @@ public class PolygonClipper {
 
         for (Point clipVertex : clipPolygon.getPoints()) {
             Point cp2 = clipVertex;
-            inputPolygon = outputPolygon;
+            if (outputPolygon.size() != 0)
+                inputPolygon = outputPolygon;
+            else
+                inputPolygon = new Polygon(subjectPolygon.getPoints());
             outputPolygon = new Polygon();
 
-            if (inputPolygon.getPoints().isEmpty())
-                break;
-            Point s = inputPolygon.getPoint(inputPolygon.size() - 1); // this line
+            Point s = inputPolygon.getPoint(inputPolygon.size() - 1);
 
             for (Point subjectVertex : inputPolygon.getPoints()) {
                 Point e = subjectVertex;
