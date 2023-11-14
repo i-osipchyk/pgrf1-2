@@ -67,7 +67,6 @@ public class Controller2D implements Controller {
                 wasDragged = false;
                 if (clippingMode == 0) {
                     if (rasterizationMode == 1) {
-
                         if (e.getButton() == MouseEvent.BUTTON1) {
                             if (polygon.getPoints().isEmpty()) {
                                 polygon.addPoint(new Point(e.getX(), e.getY()));
@@ -187,6 +186,8 @@ public class Controller2D implements Controller {
                 }
 
                 if(e.getKeyChar() == 'p' || e.getKeyChar() == 'P') {
+                    if(clippingMode == 1)
+                        cleanAll();
                     rasterizationMode = 1;
                     clippingMode = 0;
                 }
