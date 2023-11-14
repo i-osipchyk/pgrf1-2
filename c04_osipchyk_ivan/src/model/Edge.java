@@ -10,6 +10,13 @@ public class Edge {
         this.y2 = y2;
     }
 
+    public Edge(Point p1, Point p2) {
+        this.x1 = p1.x;
+        this.x2 = p2.x;
+        this.y1 = p1.y;
+        this.y2 = p2.y;
+    }
+
     public boolean isHorizontal() {
         return y1 == y2;
     }
