@@ -263,7 +263,7 @@ public class Controller2D implements Controller {
 
     private void clipPolygon(Polygon polygonToClip, Polygon clippingPolygon) {
         clipper = new PolygonClipper();
-        polygon = PolygonClipper.clip(polygonToClip, clippingPolygon);
+        polygon = clipper.clip(polygonToClip, clippingPolygon);
         update();
     }
 
