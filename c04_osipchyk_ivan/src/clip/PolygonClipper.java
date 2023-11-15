@@ -13,6 +13,10 @@ public class PolygonClipper {
         return (edge.getX2() - edge.getX1()) * (point.y - edge.getY1()) > (edge.getY2() - edge.getY1()) * (point.x - edge.getX1());
     }
 
+    private static boolean isInside(Point cp1, Point cp2, Point p) {
+        return (cp1.x - p.x) * (cp2.y - p.y) > (cp1.y - p.y) * (cp2.x - p.x);
+    }
+
     private static Point computeIntersection(Edge edge, Point p1, Point p2) {
         List<Integer> dc = new ArrayList<>();
         dc.add(edge.getX1() - edge.getX2());
@@ -32,35 +36,43 @@ public class PolygonClipper {
         return new Point(x, y);
     }
 
-    public static Polygon clip(Polygon subjectPolygon, Polygon clipPolygon) {
-        Polygon outputPolygon = new Polygon(subjectPolygon.getPoints());
-        Point cp1 = clipPolygon.getPoint(clipPolygon.size() - 1);
+    public Polygon clip(Polygon subjectPolygon, Polygon clipPolygon) {
+        Polygon result = new Polygon(subjectPolygon.getPoints());
         Polygon inputPolygon;
 
-        for (Point clipVertex : clipPolygon.getPoints()) {
-            Point cp2 = clipVertex;
-            if (outputPolygon.size() != 0)
-                inputPolygon = outputPolygon;
-            else
-                inputPolygon = new Polygon(subjectPolygon.getPoints());
-            outputPolygon = new Polygon();
+        boolean isClockwise = clipPolygon.isClockwise();
 
-            Point s = inputPolygon.getPoint(inputPolygon.size() - 1);
+        int len = clipPolygon.size();
+        for (int i = 0; i < len; i++) {
 
-            for (Point subjectVertex : inputPolygon.getPoints()) {
-                Point e = subjectVertex;
-                if (inside(e, new Edge(cp1, cp2))) {
-                    if (!inside(s, new Edge(cp1, cp2))) {
-                        outputPolygon.addPoint(computeIntersection(new Edge(cp1, cp2), s, e));
-                    }
-                    outputPolygon.addPoint(e);
-                } else if (inside(s, new Edge(cp1, cp2))) {
-                    outputPolygon.addPoint(computeIntersection(new Edge(cp1, cp2), s, e));
-                }
-                s = e;
+            int len2 = result.size();
+            inputPolygon = result;
+            result = new Polygon();
+
+            Point cp1, cp2;
+            if(isClockwise) {
+                cp1 = clipPolygon.getPoint((i + len - 1) % len);
+                cp2 = clipPolygon.getPoint(i);
+            } else {
+                cp2 = clipPolygon.getPoint((i + len - 1) % len);
+                cp1 = clipPolygon.getPoint(i);
             }
-            cp1 = cp2;
+
+            for (int j = 0; j < len2; j++) {
+
+                Point v1 = inputPolygon.getPoint((j + len2 - 1) % len2);
+                Point v2 = inputPolygon.getPoint(j);
+
+                if (isInside(cp2, cp1, v2)) {
+                    if (!isInside(cp2, cp1, v1)) {
+                        result.addPoint(computeIntersection(new Edge(cp1, cp2), v1, v2));
+                    }
+                    result.addPoint(v2);
+                } else if (isInside(cp2, cp1, v1)) {
+                    result.addPoint(computeIntersection(new Edge(cp1, cp2), v1, v2));
+                }
+            }
         }
-        return outputPolygon;
+        return result;
     }
 }
