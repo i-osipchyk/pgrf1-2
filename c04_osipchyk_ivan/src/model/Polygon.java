@@ -9,7 +9,7 @@ public class Polygon {
         this.points = new ArrayList<>();
     }
     public Polygon(ArrayList<Point> points) {
-        this.points = points;
+        this.points = new ArrayList<>(points);
     }
 
     public void addPoint(Point p) {
@@ -26,5 +26,15 @@ public class Polygon {
 
     public ArrayList<Point> getPoints() {
         return this.points;
+    }
+    public boolean isClockwise() {
+        int sum = 0;
+        for (int i = 0; i < points.size(); i++) {
+            Point current = points.get(i);
+            Point next = points.get((i + 1) % points.size());
+
+            sum += (next.x - current.x) * (next.y + current.y);
+        }
+        return sum > 0;
     }
 }
