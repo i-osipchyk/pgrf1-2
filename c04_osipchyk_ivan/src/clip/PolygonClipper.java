@@ -5,6 +5,7 @@ import model.Point;
 import model.Polygon;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class PolygonClipper {
@@ -74,5 +75,46 @@ public class PolygonClipper {
             }
         }
         return result;
+    }
+    public Polygon clipReverse(Polygon subjectPolygon, Polygon clipPolygon) {
+        Polygon result = new Polygon(subjectPolygon.getPoints());
+        Polygon inputPolygon;
+
+        boolean isClockwise = clipPolygon.isClockwise();
+
+        int len = clipPolygon.size();
+        for (int i = 0; i < len; i++) {
+
+            int len2 = result.size();
+            inputPolygon = result;
+            result = new Polygon();
+
+            Point cp1, cp2;
+            if(isClockwise) {
+                cp1 = clipPolygon.getPoint((i + len - 1) % len);
+                cp2 = clipPolygon.getPoint(i);
+            } else {
+                cp2 = clipPolygon.getPoint((i + len - 1) % len);
+                cp1 = clipPolygon.getPoint(i);
+            }
+
+            for (int j = 0; j < len2; j++) {
+
+                Point v1 = inputPolygon.getPoint((j + len2 - 1) % len2);
+                Point v2 = inputPolygon.getPoint(j);
+
+                if (isInside(cp2, cp1, v2)) {
+                    if (!isInside(cp2, cp1, v1)) {
+                        result.addPoint(computeIntersection(new Edge(cp1, cp2), v1, v2));
+                    }
+                    result.addPoint(v2);
+                } else if (isInside(cp2, cp1, v1)) {
+                    result.addPoint(computeIntersection(new Edge(cp1, cp2), v1, v2));
+                }
+            }
+        }
+        subjectPolygon.removePoints(result.getPoints());
+        subjectPolygon.addIntersections(result.getPoints());
+        return subjectPolygon;
     }
 }
