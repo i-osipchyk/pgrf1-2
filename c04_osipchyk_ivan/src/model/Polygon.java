@@ -1,15 +1,19 @@
 package model;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Polygon {
     private ArrayList<Point> points;
+    public Color color;
 
-    public Polygon() {
+    public Polygon(Color color) {
         this.points = new ArrayList<>();
+        this.color = color;
     }
-    public Polygon(ArrayList<Point> points) {
+    public Polygon(ArrayList<Point> points, Color color) {
         this.points = new ArrayList<>(points);
+        this.color = color;
     }
 
     public void addPoint(Point p) {
