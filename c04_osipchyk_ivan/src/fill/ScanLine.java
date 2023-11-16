@@ -17,7 +17,6 @@ public class ScanLine implements Filler{
     private LineRasterizer lineRasterizer;
     private Polygon polygon;
     private PolygonRasterizer polygonRasterizer;
-    private ColorGenerator colorGenerator;
 
     public ScanLine(LineRasterizer lineRasterizer, PolygonRasterizer polygonRasterizer, Polygon polygon) {
         this.polygon = polygon;

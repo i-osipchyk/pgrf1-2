@@ -6,14 +6,9 @@ import model.Polygon;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class PolygonClipper {
-
-    private static boolean inside(Point point, Edge edge) {
-        return (edge.getX2() - edge.getX1()) * (point.y - edge.getY1()) > (edge.getY2() - edge.getY1()) * (point.x - edge.getX1());
-    }
 
     private static boolean isInside(Point cp1, Point cp2, Point p) {
         return (cp1.x - p.x) * (cp2.y - p.y) > (cp1.y - p.y) * (cp2.x - p.x);

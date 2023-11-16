@@ -1,13 +1,11 @@
 package rasterize;
 
 import model.Point;
-import model.Polygon;
 import model.Rectangle;
 
 import java.awt.*;
 
 public class EllipseRasterizer {
-    Raster raster;
     LineRasterizer lineRasterizer;
     private int a, b;
     private Point centerPoint;

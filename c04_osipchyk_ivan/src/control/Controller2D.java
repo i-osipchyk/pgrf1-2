@@ -10,7 +10,6 @@ import model.Rectangle;
 import rasterize.*;
 import view.Panel;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -42,8 +41,6 @@ public class Controller2D implements Controller {
     private Color movingLineColor = Color.RED;
     private Color clippingFinalLineColor = Color.BLUE;
     private Color clippingMovingLineColor = Color.CYAN;
-
-    private int x,y;
     private LineRasterizerGraphics rasterizer;
 
     public Controller2D(Panel panel) {
@@ -293,8 +290,7 @@ public class Controller2D implements Controller {
                 if (Character.isDigit(e.getKeyChar())) {
                     numberInput.append(e.getKeyChar());
                     try {
-                        int enteredNumber = Integer.parseInt(numberInput.toString());
-                        polygonToRasterize = enteredNumber;
+                        polygonToRasterize = Integer.parseInt(numberInput.toString());
                     } catch (NumberFormatException ex) {
                         System.out.println("Invalid input: " + numberInput);
                     }
@@ -334,10 +330,6 @@ public class Controller2D implements Controller {
         }
     }
 
-    private void hardClear() {
-        panel.clear();
-    }
-
     private void cleanAll() {
         polygon = new Polygon(finalLineColor);
         polygonRasterizer = new PolygonRasterizer(lineRasterizer, movingLineColor);
@@ -352,7 +344,6 @@ public class Controller2D implements Controller {
         Color color = colorGenerator.generate();
         currentPolygon = new Polygon(color);
         polygons = new ArrayList<>();
-//        polygons.add(currentPolygon);
 
         movingPoint = null;
         panel.clear();
@@ -366,5 +357,4 @@ public class Controller2D implements Controller {
             polygon = clipper.clipReverse(polygonToClip, clippingPolygon);
         update();
     }
-
 }
