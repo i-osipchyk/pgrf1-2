@@ -9,16 +9,14 @@ import java.util.List;
 
 public class PolygonRasterizer {
     private LineRasterizer lineRasterizer;
-    private Color finalLineColor;
     private Color movingLineColor;
 
-    public PolygonRasterizer(LineRasterizer lineRasterizer, Color finalLineColor, Color movingLineColor) {
+    public PolygonRasterizer(LineRasterizer lineRasterizer, Color movingLineColor) {
         this.lineRasterizer = lineRasterizer;
-        this.finalLineColor = finalLineColor;
         this.movingLineColor = movingLineColor;
     }
 
-    public void rasterize(Polygon polygon, Point movingPoint) {
+    public void rasterize(Polygon polygon, Point movingPoint, Color finalLineColor) {
 
         List<Point> points = polygon.getPoints();
 
@@ -39,7 +37,7 @@ public class PolygonRasterizer {
                 Point next = points.get(i + 1);
 
                 lineRasterizer.rasterize(
-                        new Line(current, next), this.finalLineColor
+                        new Line(current, next), finalLineColor
                 );
             }
         }
@@ -62,7 +60,7 @@ public class PolygonRasterizer {
             Point last = points.get(points.size() - 1);
 
             lineRasterizer.rasterize(
-                    new Line(last, first), this.finalLineColor
+                    new Line(last, first), finalLineColor
             );
         }
     }
