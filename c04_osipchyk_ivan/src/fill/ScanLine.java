@@ -4,6 +4,7 @@ import model.Edge;
 import model.Line;
 import model.Point;
 import model.Polygon;
+import rasterize.ColorGenerator;
 import rasterize.LineRasterizer;
 import rasterize.PolygonRasterizer;
 import rasterize.Raster;
@@ -16,6 +17,7 @@ public class ScanLine implements Filler{
     private LineRasterizer lineRasterizer;
     private Polygon polygon;
     private PolygonRasterizer polygonRasterizer;
+    private ColorGenerator colorGenerator;
 
     public ScanLine(LineRasterizer lineRasterizer, PolygonRasterizer polygonRasterizer, Polygon polygon) {
         this.polygon = polygon;
@@ -71,6 +73,6 @@ public class ScanLine implements Filler{
             }
         }
 
-        polygonRasterizer.rasterize(polygon, null);
+        polygonRasterizer.rasterize(polygon, null, polygon.color);
     }
 }
