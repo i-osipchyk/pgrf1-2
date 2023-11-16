@@ -186,7 +186,7 @@ public class Controller2D implements Controller {
                 }
 
                 if(e.getKeyChar() == 'p' || e.getKeyChar() == 'P') {
-                    if(clippingMode == 1)
+                    if(clippingMode > 0)
                         cleanAll();
                     rasterizationMode = 1;
                     clippingMode = 0;
@@ -214,6 +214,10 @@ public class Controller2D implements Controller {
 
                 if(e.getKeyChar() == 'o' || e.getKeyChar() == 'O') {
                     clippingMode = 1;
+                }
+
+                if(e.getKeyChar() == 'i' || e.getKeyChar() == 'I') {
+                    clippingMode = 2;
                 }
 
                 if(e.getKeyChar() == 'e' || e.getKeyChar() == 'E') {
@@ -263,7 +267,10 @@ public class Controller2D implements Controller {
 
     private void clipPolygon(Polygon polygonToClip, Polygon clippingPolygon) {
         clipper = new PolygonClipper();
-        polygon = clipper.clip(polygonToClip, clippingPolygon);
+        if (clippingMode == 1)
+            polygon = clipper.clip(polygonToClip, clippingPolygon);
+        else if (clippingMode == 2)
+            polygon = clipper.clipReverse(polygonToClip, clippingPolygon);
         update();
     }
 
