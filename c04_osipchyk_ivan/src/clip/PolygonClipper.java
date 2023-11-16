@@ -4,6 +4,7 @@ import model.Edge;
 import model.Point;
 import model.Polygon;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,7 +39,7 @@ public class PolygonClipper {
     }
 
     public Polygon clip(Polygon subjectPolygon, Polygon clipPolygon) {
-        Polygon result = new Polygon(subjectPolygon.getPoints());
+        Polygon result = new Polygon(subjectPolygon.getPoints(), Color.GREEN);
         Polygon inputPolygon;
 
         boolean isClockwise = clipPolygon.isClockwise();
@@ -48,7 +49,7 @@ public class PolygonClipper {
 
             int len2 = result.size();
             inputPolygon = result;
-            result = new Polygon();
+            result = new Polygon(Color.GREEN);
 
             Point cp1, cp2;
             if(isClockwise) {
@@ -77,7 +78,7 @@ public class PolygonClipper {
         return result;
     }
     public Polygon clipReverse(Polygon subjectPolygon, Polygon clipPolygon) {
-        Polygon result = new Polygon(subjectPolygon.getPoints());
+        Polygon result = new Polygon(subjectPolygon.getPoints(), Color.GREEN);
         Polygon inputPolygon;
 
         boolean isClockwise = clipPolygon.isClockwise();
@@ -87,7 +88,7 @@ public class PolygonClipper {
 
             int len2 = result.size();
             inputPolygon = result;
-            result = new Polygon();
+            result = new Polygon(Color.GREEN);
 
             Point cp1, cp2;
             if(isClockwise) {
