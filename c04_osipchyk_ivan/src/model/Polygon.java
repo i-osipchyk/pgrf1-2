@@ -37,4 +37,16 @@ public class Polygon {
         }
         return sum > 0;
     }
+    public void removePoints(ArrayList<Point> points) {
+        this.points.removeAll(points);
+    }
+
+    public void addIntersections(ArrayList<Point> points) {
+        ArrayList<Point> currentPoints = new ArrayList<>(this.points);
+        for (Point point: points) {
+            if (!currentPoints.contains(point)) {
+                this.points.add(point);
+            }
+        }
+    }
 }
