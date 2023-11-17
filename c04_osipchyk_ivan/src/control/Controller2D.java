@@ -90,7 +90,7 @@ public class Controller2D implements Controller {
                                 polygon.addPoint(new Point(e.getX(), e.getY()));
                                 movingPoint = new Point(e.getX(), e.getY());
                             }
-                        } else if (e.getButton() == MouseEvent.BUTTON3) {
+                        } else if (e.getButton() == MouseEvent.BUTTON3 && fillingMode == 0) {
                             // find nearest point
                             int nearest = polygon.findNearestPointIndex(new Point(e.getX(), e.getY()), 25);
                             if(nearest >= 0) {
