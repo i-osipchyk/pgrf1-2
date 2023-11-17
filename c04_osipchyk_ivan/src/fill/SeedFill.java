@@ -21,14 +21,18 @@ public class SeedFill implements Filler{
     }
 
     private void seedFill(int x, int y) {
+        // if x is within canvas boundaries
         if (x > 0 && x < this.xMax && y > 0 && y < this.yMax) {
             int pixelColor = raster.getPixel(x, y);
 
+            // skip the point if it doesn't have background color
             if (this.backgroundColor != pixelColor)
                 return;
 
+            // rasterize pixel
             raster.setPixel(x, y, 0xff00ff);
 
+            // call for neighbouring points
             seedFill(x+1, y);
             seedFill(x-1, y);
             seedFill(x, y+1);

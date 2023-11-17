@@ -9,6 +9,7 @@ public class Rectangle extends Polygon {
         super(color);
     }
 
+    // add all 2 points to rectangle and calculate other 2
     public void addAllPoints(Point p1, Point p3) {
         Point p2 = new Point(p1.x, p3.y);
         Point p4 = new Point(p3.x, p1.y);

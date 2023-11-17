@@ -8,6 +8,7 @@ public class ColorGenerator {
 
     }
 
+    // generate random light color
     public Color generate() {
         Random random = new Random();
         int maxAttempts = 1000;
@@ -27,6 +28,7 @@ public class ColorGenerator {
         return Color.WHITE;
     }
 
+    // determine if color is too dark
     private boolean isTooDark(Color color, int darknessThreshold) {
         double brightness = (0.2126 * color.getRed()) + (0.7152 * color.getGreen()) + (0.0722 * color.getBlue());
         return brightness < darknessThreshold;

@@ -26,6 +26,7 @@ public class ScanLine implements Filler{
     @Override
     public void fill() {
         ArrayList<Edge> edges = new ArrayList<>();
+        // create edges from polygon points
         for (int i = 0; i < polygon.size(); i++) {
             Point p1 = polygon.getPoint(i);
 
@@ -42,6 +43,7 @@ public class ScanLine implements Filler{
             edges.add(edge);
         }
 
+        // define the range on y-axis, through which to iterate
         int yMin = polygon.getPoint(0).y;
         int yMax = yMin;
 
@@ -52,9 +54,11 @@ public class ScanLine implements Filler{
             yMax = Math.max(currY, yMax);
         }
 
+        // iterate through y-range
         for (int y = yMin; y <= yMax; y++) {
             ArrayList<Integer> intersections = new ArrayList<>();
 
+            // add all intersection on current y-coordinate to the list and sort it
             for (Edge edge: edges) {
                 if (edge.getY1() < y && edge.getY2() >= y || edge.getY2() < y && edge.getY1() >= y) {
                     int x = (int) Math.round(edge.getX1() + (double) (y - edge.getY1()) / (edge.getY2() - edge.getY1()) * (edge.getX2() - edge.getX1()));
@@ -64,6 +68,7 @@ public class ScanLine implements Filler{
 
             Collections.sort(intersections);
 
+            // draw lines between even and odd points
             for (int i = 0; i < intersections.size(); i+=2) {
                 int x1 = intersections.get(i);
                 int x2 = intersections.get(i+1);
@@ -71,7 +76,7 @@ public class ScanLine implements Filler{
                 lineRasterizer.rasterize(x1, y, x2, y, Color.BLUE);
             }
         }
-
+        // draw polygon
         polygonRasterizer.rasterize(polygon, null, polygon.color);
     }
 }

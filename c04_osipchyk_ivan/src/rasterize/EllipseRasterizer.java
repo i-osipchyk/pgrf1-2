@@ -22,24 +22,24 @@ public class EllipseRasterizer {
             int maxY = Math.max(rectangle.getPoint(0).y, rectangle.getPoint(2).y);
             int minY = Math.min(rectangle.getPoint(0).y, rectangle.getPoint(2).y);
 
+            // calculate major and minor axis
             a = Math.round((float) (maxX - minX) / 2);
             b = Math.round((float) (maxY - minY) / 2);
 
-            // Calculate the center point as the midpoint of the major and minor axes.
+            // calculate the center point as the midpoint of the major and minor axes.
             this.centerPoint = new Point((maxX + minX) / 2, (maxY + minY) / 2);
         }
     }
 
     public void rasterize()
     {
-        // center of the
         int cx, cy;
 
-        // center of the ellipse
+        // set center of the ellipse
         cx = centerPoint.x;
         cy = centerPoint.y;
 
-        // major and minor axis
+        // set major and minor axis
         double A = a, B = b, px = 0, py = 0;
 
         // draw the ellipse
