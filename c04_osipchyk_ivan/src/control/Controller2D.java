@@ -17,31 +17,42 @@ import java.util.ArrayList;
 public class Controller2D implements Controller {
 
     private final Panel panel;
-    public LineRasterizer lineRasterizer;
+
+    // models
     public Polygon polygon;
-    public PolygonRasterizer polygonRasterizer;
     public Rectangle rectangle;
-    public RectangleRasterizer rectangleRasterizer;
-    public EllipseRasterizer ellipseRasterizer;
     public Polygon clippingPolygon;
-    public PolygonRasterizer clippingPolygonRasterizer;
     public PolygonClipper clipper;
-    private boolean wasDragged = false;
-    private ArrayList<Polygon> polygons = new ArrayList<>();
     private Polygon currentPolygon;
-    private final ColorGenerator colorGenerator = new ColorGenerator();
-    private int polygonToRasterize = -1;
-    private StringBuilder numberInput = new StringBuilder();
     Point startingPoint;
     Point movingPoint;
-    private int rasterizationMode = 1;
-    private int fillingMode = 1;
-    private int clippingMode = 0;
-    public Color finalLineColor = Color.GREEN;
-    private Color movingLineColor = Color.RED;
-    private Color clippingFinalLineColor = Color.BLUE;
-    private Color clippingMovingLineColor = Color.CYAN;
+    private ArrayList<Polygon> polygons = new ArrayList<>();
+
+    // rasterizers
+    public LineRasterizer lineRasterizer;
+    public PolygonRasterizer polygonRasterizer;
+    public RectangleRasterizer rectangleRasterizer;
+    public EllipseRasterizer ellipseRasterizer;
+    public PolygonRasterizer clippingPolygonRasterizer;
     private LineRasterizerGraphics rasterizer;
+
+    // modes
+    private int rasterizationMode = 1;
+    private int fillingMode = 0;
+    private int clippingMode = 0;
+
+    // dynamic variables
+    private boolean wasDragged = false;
+    private int polygonToRasterize = -1;
+    private StringBuilder numberInput = new StringBuilder();
+    int nearestPointIndex = -1;
+
+    // colors
+    private final ColorGenerator colorGenerator = new ColorGenerator();
+    public Color finalLineColor = Color.GREEN;
+    private final Color movingLineColor = Color.RED;
+    private final Color clippingFinalLineColor = Color.BLUE;
+    private final Color clippingMovingLineColor = Color.CYAN;
 
     public Controller2D(Panel panel) {
         this.panel = panel;
@@ -67,74 +78,83 @@ public class Controller2D implements Controller {
             @Override
             public void mousePressed(MouseEvent e) {
                 wasDragged = false;
-                if (clippingMode == 0) {
-                    if (rasterizationMode == 1) {
+
+                if (rasterizationMode == 1) {
+                    if (clippingMode == 0) {
                         if (e.getButton() == MouseEvent.BUTTON1) {
                             if (polygon.getPoints().isEmpty()) {
                                 polygon.addPoint(new Point(e.getX(), e.getY()));
                                 movingPoint = new Point(e.getX(), e.getY());
                             }
+                        } else if (e.getButton() == MouseEvent.BUTTON3) {
+                            int nearest = polygon.findNearestPointIndex(new Point(e.getX(), e.getY()), 25);
+                            if(nearest >= 0) {
+                                nearestPointIndex = nearest;
+                                polygon.setPoint(nearest, new Point(e.getX(), e.getY()));
+                            } else {
+                                nearestPointIndex = -1;
+                                System.out.println("Could not find any near point");
+                            }
                         }
-
-                        if (e.getButton() == MouseEvent.BUTTON3) {
-                            if (fillingMode == 1) {
-                                ScanLine scanLine = new ScanLine(lineRasterizer, polygonRasterizer, polygon);
-                                scanLine.fill();
+                    } else {
+                        if (e.getButton() == MouseEvent.BUTTON1) {
+                            if (clippingPolygon.getPoints().isEmpty()) {
+                                clippingPolygon.addPoint(new Point(e.getX(), e.getY()));
                             }
-
-                            if (fillingMode == 2) {
-                                SeedFill seedFill = new SeedFill(panel.getRaster(), panel.getRaster().getPixel(e.getX(), e.getY()), e.getX(), e.getY(), panel.getWidth(), panel.getHeight());
-                                seedFill.fill();
-                            }
-
-                            if (fillingMode == 3) {
-                                SeedFillBorder seedFillBorder = new SeedFillBorder(panel.getRaster(), finalLineColor, e.getX(), e.getY(), panel.getWidth(), panel.getHeight());
-                                seedFillBorder.fill();
+                        } else if (e.getButton() == MouseEvent.BUTTON3) {
+                            int nearest = clippingPolygon.findNearestPointIndex(new Point(e.getX(), e.getY()), 30);
+                            if(nearest >= 0) {
+                                nearestPointIndex = nearest;
+                                clippingPolygon.setPoint(nearest, new Point(e.getX(), e.getY()));
+                            } else {
+                                nearestPointIndex = -1;
                             }
                         }
                     }
 
-                    if (rasterizationMode == 2) {
-                        cleanAll();
-                        if (rectangle.getPoints().isEmpty()) {
-                            startingPoint = new Point(e.getX(), e.getY());
+                    if (fillingMode == 1) {
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+                            ScanLine scanLine = new ScanLine(lineRasterizer, polygonRasterizer, polygon);
+                            scanLine.fill();
+                            fillingMode = 0;
+                        }
+                    } else if (fillingMode == 2) {
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+                            SeedFill seedFill = new SeedFill(panel.getRaster(), panel.getRaster().getPixel(e.getX(), e.getY()), e.getX(), e.getY(), panel.getWidth(), panel.getHeight());
+                            seedFill.fill();
+                            fillingMode = 0;
+                        }
+                    } else if (fillingMode == 3) {
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+                            SeedFillBorder seedFillBorder = new SeedFillBorder(panel.getRaster(), polygon.color, e.getX(), e.getY(), panel.getWidth(), panel.getHeight());
+                            seedFillBorder.fill();
+                            fillingMode = 0;
+                        }
+                    }
+                } else if (rasterizationMode == 2) {
+                    cleanAll();
+                    if (rectangle.getPoints().isEmpty()) {
+                        startingPoint = new Point(e.getX(), e.getY());
+                        movingPoint = new Point(e.getX(), e.getY());
+                    }
+                } else if (rasterizationMode == 3) {
+                    if (e.getButton() == MouseEvent.BUTTON1) {
+                        if (currentPolygon.getPoints().isEmpty()) {
+                            currentPolygon.addPoint(new Point(e.getX(), e.getY()));
                             movingPoint = new Point(e.getX(), e.getY());
                         }
                     }
 
-                    if (rasterizationMode == 3) {
-                        if (e.getButton() == MouseEvent.BUTTON1) {
-                            if (currentPolygon.getPoints().isEmpty()) {
-                                currentPolygon.addPoint(new Point(e.getX(), e.getY()));
-                                movingPoint = new Point(e.getX(), e.getY());
-                            }
-                        }
-
+                    if (fillingMode == 1) {
                         if (e.getButton() == MouseEvent.BUTTON3) {
-                            if (fillingMode == 1) {
-                                if (polygonToRasterize > 0 && polygonToRasterize <= polygons.size()) {
-                                    ScanLine scanLine = new ScanLine(lineRasterizer, polygonRasterizer, polygons.get(polygonToRasterize-1));
-                                    scanLine.fill();
-                                } else {
-                                    System.out.println("There is no such polygon drawn");
-                                }
-                                polygonToRasterize = -1;
-                                numberInput.setLength(0);
+                            if (polygonToRasterize > 0 && polygonToRasterize <= polygons.size()) {
+                                ScanLine scanLine = new ScanLine(lineRasterizer, polygonRasterizer, polygons.get(polygonToRasterize-1));
+                                scanLine.fill();
+                            } else {
+                                System.out.println("There is no such polygon drawn");
                             }
-                        }
-                    }
-                } else {
-                    if (e.getButton() == MouseEvent.BUTTON1) {
-                        if (clippingPolygon.getPoints().isEmpty()) {
-                            clippingPolygon.addPoint(new Point(e.getX(), e.getY()));
-                        }
-                    }
-
-                    if (e.getButton() == MouseEvent.BUTTON3) {
-                        if (fillingMode == 1) {
-                            ScanLine scanLine = new ScanLine(lineRasterizer, polygonRasterizer, polygon);
-                            scanLine.fill();
                             polygonToRasterize = -1;
+                            numberInput.setLength(0);
                         }
                     }
                 }
@@ -149,8 +169,8 @@ public class Controller2D implements Controller {
                 x = Math.max(0, Math.min(x, panel.getWidth()));
                 y = Math.max(0, Math.min(y, panel.getHeight()));
 
-                if (clippingMode == 0) {
-                    if (rasterizationMode == 1) {
+                if (rasterizationMode == 1) {
+                    if (clippingMode == 0) {
                         if (e.getButton() == MouseEvent.BUTTON1) {
                             if (wasDragged || polygon.getPoints().size() != 1) {
                                 polygon.addPoint(new Point(x, y));
@@ -159,27 +179,26 @@ public class Controller2D implements Controller {
                             update();
                         }
                     }
-
-                    if (rasterizationMode == 2) {
-                        rectangle.addAllPoints(startingPoint, new Point(x, y));
-                        if (wasDragged)
-                            update();
-                        movingPoint = null;
-                    }
-
-                    if (rasterizationMode == 3) {
+                    else if (clippingMode == 1) {
                         if (e.getButton() == MouseEvent.BUTTON1) {
-                            if (wasDragged || currentPolygon.getPoints().size() != 1) {
-                                currentPolygon.addPoint(new Point(x, y));
+                            if (wasDragged || clippingPolygon.getPoints().size() != 1) {
+                                clippingPolygon.addPoint(new Point(x, y));
                             }
                             movingPoint = null;
                             update();
                         }
                     }
-                } else {
+                }
+                else if (rasterizationMode == 2) {
+                    rectangle.addAllPoints(startingPoint, new Point(x, y));
+                    if (wasDragged)
+                        update();
+                    movingPoint = null;
+                }
+                else if (rasterizationMode == 3) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
-                        if (wasDragged || clippingPolygon.getPoints().size() != 1) {
-                            clippingPolygon.addPoint(new Point(x, y));
+                        if (wasDragged || currentPolygon.getPoints().size() != 1) {
+                            currentPolygon.addPoint(new Point(x, y));
                         }
                         movingPoint = null;
                         update();
@@ -195,29 +214,31 @@ public class Controller2D implements Controller {
                 int x = e.getX();
                 int y = e.getY();
 
-                // Adjust coordinates to be within canvas boundaries
                 x = Math.max(0, Math.min(x, panel.getWidth()));
                 y = Math.max(0, Math.min(y, panel.getHeight()));
-                if (clippingMode == 0) {
-                    if (rasterizationMode == 1) {
-                        if (e.getButton() == MouseEvent.BUTTON1) {
-                            movingPoint = new Point(x, y);
-                            update();
-                        }
-                    }
 
-                    if (rasterizationMode == 2) {
+                if (rasterizationMode == 1) {
+                    if (e.getButton() == MouseEvent.BUTTON1) {
                         movingPoint = new Point(x, y);
                         update();
                     }
-
-                    if (rasterizationMode == 3) {
-                        if (e.getButton() == MouseEvent.BUTTON1) {
-                            movingPoint = new Point(x, y);
+                    if (clippingMode == 0) {
+                        if (e.getButton() == MouseEvent.BUTTON3 && nearestPointIndex >= 0) {
+                            movingPoint = null;
+                            polygon.setPoint(nearestPointIndex, new Point(e.getX(), e.getY()));
+                            update();
+                        }
+                    } else {
+                        if (e.getButton() == MouseEvent.BUTTON3 && nearestPointIndex >= 0) {
+                            movingPoint = null;
+                            clippingPolygon.setPoint(nearestPointIndex, new Point(e.getX(), e.getY()));
                             update();
                         }
                     }
-                } else {
+                } else if (rasterizationMode == 2) {
+                    movingPoint = new Point(x, y);
+                    update();
+                } else if (rasterizationMode == 3) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         movingPoint = new Point(x, y);
                         update();
@@ -271,6 +292,10 @@ public class Controller2D implements Controller {
 
                 if(e.getKeyChar() == 'e' || e.getKeyChar() == 'E') {
                     clipPolygon(polygon, clippingPolygon);
+                }
+
+                if(e.getKeyChar() == 'v' || e.getKeyChar() == 'V') {
+                    fillingMode = 0;
                 }
 
                 if(e.getKeyChar() == 'l' || e.getKeyChar() == 'L') {
