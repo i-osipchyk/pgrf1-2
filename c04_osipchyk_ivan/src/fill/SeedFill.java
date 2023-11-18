@@ -30,7 +30,7 @@ public class SeedFill implements Filler{
                 return;
 
             // rasterize pixel
-            raster.setPixel(x, y, 0xff00ff);
+            raster.setPixel(x, y, 0xffffff);
 
             // call for neighbouring points
             seedFill(x+1, y);
